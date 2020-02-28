@@ -1,5 +1,4 @@
 import GameObject from "./gameObject.js";
-import newPositionFromRelative from "./helpers.js";
 
 export default class Panel extends GameObject {
 
@@ -15,14 +14,6 @@ export default class Panel extends GameObject {
         }
 
         this.gameObjectsChildren = [];
-
-    }
-
-    createChildPanel(relativePosition, size, color) {
-        const newPos = newPositionFromRelative(this.position, relativePosition);
-        const newPanel = new Panel(newPos, size, color);
-        this.gameObjectsChildren.push(newPanel);
-        return newPanel;
 
     }
 

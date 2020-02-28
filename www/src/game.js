@@ -1,5 +1,6 @@
 import InputHandler from "./input.js";
 import Panel from "./assets/display/predef/panel.js";
+import GameObject from "./assets/display/predef/gameObject.js";
 
 const SPEED = 100;  // DEFAULT
 
@@ -45,6 +46,12 @@ export default class Game {
     createMainObjects() {
         this.gameObjects.uppermostPanel =
                 new Panel({x: 0, y: 0}, {x: this.gameWidth, y: 25}, "#222");
+        var buttonText = this.gameObjects.uppermostPanel.createChildButtonText({x: 1190, y:0}, "MENU", {x: 90, y:25});
+        buttonText.triggerClick = function() {
+            console.log("LBC");
+        }
+        buttonText.setButtonWidth(90);
+        buttonText.setButtonHeight(24);
     }
 
 }
