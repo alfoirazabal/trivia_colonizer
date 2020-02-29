@@ -77,7 +77,7 @@ export default class Game {
                         game.gameObjects[upperPanelName] = new Panel({x: game.gameWidth / 2, y: 25}, {x: game.gameWidth / 2, y: 80}, "#888");
                         break;
                 }
-                var labelPNumber = new Label({x: 10, y: 60}, "P1");
+                var labelPNumber = new Label({x: 10, y: 60}, "P" + playerNumber);
                 labelPNumber.setFont("60px Arial");
                 game.gameObjects[upperPanelName].addChild(labelPNumber);
                 var labelPScore = new Label({x: 90, y: 30}, "Score: 0");
@@ -92,6 +92,10 @@ export default class Game {
                     var powerUpIcon = new UIImage({x: i * 30, y: 0}, null, null);
                     powerUpsPanel.addChild(powerUpIcon);
                 }
+            }
+
+            function createMapGridPanel(game) {
+                
             }
         }
     }
