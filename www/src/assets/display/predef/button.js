@@ -112,16 +112,30 @@ export class Button extends GameObject {
         } else {
             ctx.fillStyle = this.textColor;
         }
-        ctx.fillText(
-            this.text,
-            this.position.x + DEFAULT_BUTTON_TEXT_SIZE,
-            this.position.y + DEFAULT_BUTTON_TEXT_SIZE + 
-                    (DEFAULT_BUTTON_TEXT_SIZE / 2)
-        );
+        if(this.buttonType !== "image") {
+            ctx.fillText(
+                this.text,
+                this.position.x + DEFAULT_BUTTON_TEXT_SIZE,
+                this.position.y + DEFAULT_BUTTON_TEXT_SIZE + 
+                        (DEFAULT_BUTTON_TEXT_SIZE / 2)
+            );
+        } else {
+            ctx.drawImage(
+                this.image,
+                this.position.x,
+                this.position.y,
+                this.size.x,
+                this.size.y
+            );
+        }
     }
     
     static createButtonText(position, text, size) {
         return new Button(position, null, text, size);
+    }
+
+    static createButtonImageFixedSize(position, image, size) {
+        return new Button(position, image, null, size);
     }
 
 }

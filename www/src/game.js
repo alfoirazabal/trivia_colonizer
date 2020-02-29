@@ -5,6 +5,7 @@ import { Label } from "./assets/display/predef/label.js";
 import UIImage from "./assets/display/predef/uiimage.js";
 import MapGrid, { GRID_DIMENSIONS, GRID_TILE_SIZE, GRID_POSITION_COLORS } from "./assets/domain/mapGrid/mapGrid.js";
 import { GRID_POWER_UPS } from "./assets/domain/mapGrid/gridPowerUps.js";
+import { GRID_FILTER_OPTIONS, GRID_FILTER_BUTTONS_POSITIONING } from "./assets/domain/mapGrid/gridsFilter.js";
 
 const SPEED = 100;  // DEFAULT
 
@@ -145,6 +146,28 @@ export default class Game {
                     var panel = game.gameObjects[PLAYERS_UPPER_PANEL_OBJECT_NAMES + playerNumber].gameObjectsChildren[3];
                     var powerUpImage = new UIImage({x: powerUpPanelIndexPosition * 30, y: 0}, powerUpImage, {x: 30, y: 30});
                     panel.addChild(powerUpImage);
+                }
+                // Drawing Map Filter Panel
+                var mapFilterPanel = new Panel({x: 0, y: 505}, {x: game.gameWidth, y: 40}, "#333");
+                game.gameObjects.mapFilterPanel = mapFilterPanel;
+                var labelMapFilter = new Label({x: 20, y: 25}, "Map Filter: ");
+                labelMapFilter.setFont("18px Arial");
+                game.gameObjects.mapFilterPanel.addChild(labelMapFilter);
+                var filterButtonStartPosX = 
+                        GRID_FILTER_BUTTONS_POSITIONING.START_POS_X;
+                var filterButtonRightMarginX = 
+                        GRID_FILTER_BUTTONS_POSITIONING.RIGHT_MARGIN_X;
+                var filterButtonSize = 
+                        GRID_FILTER_BUTTONS_POSITIONING.BUTTON_SIZE;
+                for(var i = 0 ; i < Object.keys(GRID_FILTER_OPTIONS).length ; i++) {
+                    var filterImage = GRID_FILTER_OPTIONS[i].image.deactivated;
+                    var xPosition = (filterButtonStartPosX + i * filterButtonSize) + (filterButtonRightMarginX * (i + 1));
+                    var filterButton = Button.createButtonImageFixedSize(
+                        {x: xPosition, y: 5},
+                        filterImage,
+                        {x: filterButtonSize, y: filterButtonSize}
+                    );
+                    game.gameObjects.mapFilterPanel.addChild(filterButton);
                 }
             }
         }

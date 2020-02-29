@@ -16,12 +16,6 @@ export const QUESTION_DIFFICULTIES = {
     2: {name: "hard", color: "#f00"}
 };
 
-export const GRID_FILTER_OPTIONS = {
-    0: {name: "Dominating Players Filter"},
-    1: {name: "Question Types Filter"},
-    2: {name: "Question Difficulties Filter"}
-}
-
 export const TOTAL_N_OF_POWER_UPS = 10; // On the Grid
 
 export default class MapGrid {
