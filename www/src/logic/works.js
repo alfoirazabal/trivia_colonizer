@@ -1,7 +1,33 @@
 import { ALL_TRIVIA_QUESTIONS } from "../../allTriviaQuestions.triviaQuestions";
+import { QUESTION_DIFFICULTIES } from "../assets/domain/mapGrid/mapGrid.js";
+import { QUESTION_TYPES } from "../assets/domain/mapGrid/questionTypes.js";
+
+export function getRandomQuestionFiltered(difficulty, category) {
+    var qDifficulty = QUESTION_DIFFICULTIES[difficulty].name;
+    var qCategories = [];
+    if (QUESTION_TYPES[category].subCategories.length === 0) {
+        qCategories.push(QUESTION_TYPES[category].descriptor);
+    } else {
+        for(var qSubCat of QUESTION_TYPES[category].subCategories) {
+            qCategories.push(qSubCat);
+        }
+    }
+    var filteredQuestions = ALL_TRIVIA_QUESTIONS.filter(e => {
+        if (qCategories.includes(e.category) && e.difficulty === qDifficulty) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+    return getQuestionFromFiltered(filteredQuestions);
+}
 
 export function getRandomQuestion() {
-    var randQuest = ALL_TRIVIA_QUESTIONS[Math.floor(Math.random() * ALL_TRIVIA_QUESTIONS.length)];
+    return getQuestionFromFiltered(ALL_TRIVIA_QUESTIONS);
+}
+
+function getQuestionFromFiltered(triviaQuestions) {
+    var randQuest = triviaQuestions[Math.floor(Math.random() * triviaQuestions.length)];
     var randQuestionText = randQuest.question.split("&quot;").join("\"").split("&#039;").join("'");
     var answerValues = [];
     var correctAnswerIndex;
