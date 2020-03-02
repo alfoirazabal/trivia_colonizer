@@ -9,9 +9,10 @@ export function getRandomQuestionFiltered(difficulty, category) {
         qCategories.push(QUESTION_TYPES[category].descriptor);
     } else {
         for(var qSubCat of QUESTION_TYPES[category].subCategories) {
-            qCategories.push(qSubCat);
+            qCategories.push(qSubCat.descriptor);
         }
     }
+    console.log(qDifficulty, qCategories);
     var filteredQuestions = ALL_TRIVIA_QUESTIONS.filter(e => {
         if (qCategories.includes(e.category) && e.difficulty === qDifficulty) {
             return true;
@@ -19,7 +20,9 @@ export function getRandomQuestionFiltered(difficulty, category) {
             return false;
         }
     });
-    return getQuestionFromFiltered(filteredQuestions);
+    var qFromFiltered = getQuestionFromFiltered(filteredQuestions);
+    console.log(qFromFiltered);
+    return qFromFiltered;
 }
 
 export function getRandomQuestion() {
@@ -52,7 +55,6 @@ function getQuestionFromFiltered(triviaQuestions) {
                     var randIndex2 = Math.floor(Math.random() * randInd.length);
                     var rand1 = randInd[randIndex1];
                     var rand2 = randInd[randIndex2];
-                    var aux = rand1;
                     randInd[randIndex1] = rand2;
                     randInd[randIndex2] = rand1;                   
                 }

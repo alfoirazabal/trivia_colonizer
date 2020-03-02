@@ -3,7 +3,7 @@ import { Label } from "../assets/display/predef/label.js";
 import { Button } from "../assets/display/predef/button.js";
 import { getRandomQuestion } from "./works.js";
 import UIImage from "../assets/display/predef/uiimage.js";
-import MapGrid, { GRID_DIMENSIONS, GRID_TILE_SIZE, GRID_POSITION_COLORS } from "../assets/domain/mapGrid/mapGrid.js";
+import { GRID_DIMENSIONS, GRID_TILE_SIZE, GRID_POSITION_COLORS } from "../assets/domain/mapGrid/mapGrid.js";
 import { GRID_POWER_UPS } from "../assets/domain/mapGrid/gridPowerUps.js";
 import { GRID_FILTER_OPTIONS, GRID_FILTER_BUTTONS_POSITIONING } from "../assets/domain/mapGrid/gridsFilter.js";
 
@@ -73,7 +73,7 @@ export function setUpperPanel(game) {
         var labelPNumber = new Label({x: 10, y: 60}, "P" + playerNumber);
         labelPNumber.setFont("60px Arial");
         game.gameObjects[upperPanelName].addChild(labelPNumber);
-        var labelPScore = new Label({x: 90, y: 30}, "Score: 0");
+        var labelPScore = new Label({x: 90, y: 30}, "Score: " + game.PLAYER_SCORES[playerNumber - 1]);
         labelPScore.setFont("20px Arial");
         game.gameObjects[upperPanelName].addChild(labelPScore);
         var labelPowerUps = new Label({x: 90, y: 60}, "Power Ups: ");
@@ -91,7 +91,6 @@ export function createMapGridPanel(game) {
             {x: 1280, y: 400},
             "#222"
     );
-    var mapGrid = new MapGrid(game);
     // Creating Default Grids...
     for(var col = 0 ; col < GRID_DIMENSIONS.X ; col++) {
         for(var row = 0 ; row < GRID_DIMENSIONS.Y ; row++) {
@@ -117,7 +116,7 @@ export function createMapGridPanel(game) {
     var currentPowerUpInPlayersPanel = 0;
     for(var col = 0 ; col < GRID_DIMENSIONS.Y ; col++) {
         for(var row = 0 ; row < GRID_DIMENSIONS.X ; row++) {
-            var powerUpValue = mapGrid.grid.powerUpsGrid[row][col];
+            var powerUpValue = game.mapGrid.grid.powerUpsGrid[row][col];
             if(powerUpValue !== null) {
                 drawPowerUpInGrid(row, col, powerUpValue);
                 drawPowerUpInPlayerPanel(1, powerUpValue, currentPowerUpInPlayersPanel);
@@ -150,7 +149,12 @@ export function createMapGridPanel(game) {
     var filterButtonSize = 
             GRID_FILTER_BUTTONS_POSITIONING.BUTTON_SIZE;
     for(var i = 0 ; i < Object.keys(GRID_FILTER_OPTIONS).length ; i++) {
-        var filterImage = GRID_FILTER_OPTIONS[i].image.deactivated;
+        var filterImage;
+        if (i === game.ACTIVE_FILTER_INDEX) {
+            filterImage = GRID_FILTER_OPTIONS[i].image.activated;
+        } else {
+            filterImage = GRID_FILTER_OPTIONS[i].image.deactivated;
+        }
         var xPosition = (filterButtonStartPosX + i * filterButtonSize) + (filterButtonRightMarginX * (i + 1));
         var filterButton = Button.createButtonImageFixedSize(
             {x: xPosition, y: 5},
@@ -162,7 +166,5 @@ export function createMapGridPanel(game) {
     // Preparing Questions Panel (LOGIC)
     var question = getRandomQuestion();
     // Drawing Questions Panel
-    drawPanelQuestion(game, question);
-    question = getRandomQuestion();
     drawPanelQuestion(game, question);
 }

@@ -1,5 +1,6 @@
 import { QUESTION_TYPES } from "./questionTypes.js";
 import { GRID_POWER_UPS } from "./gridPowerUps.js";
+import { getRandomQuestionFiltered } from "../../../logic/works.js";
 
 export const GRID_DIMENSIONS = {
     X: 5,
@@ -26,12 +27,16 @@ export default class MapGrid {
         var questionTypes = this.createQuestionTypesGrid();
         var questionDifficulties = this.createQuestionDifficultiesGrid();
         var powerUpsGrid = this.createPowerUpsGrid();
+        var questions = this.assignQuestions(questionTypes, questionDifficulties);
         this.grid = {
             dominatingPlayer,
             questionTypes,
             questionDifficulties,
-            powerUpsGrid
+            powerUpsGrid,
+            questions
         }
+
+        this.questionIndexesAssigned = [];
     }
 
     createDominatingPlayersGrid() {
@@ -116,6 +121,23 @@ export default class MapGrid {
                 }
             }
             grid.push(currRow);
+        }
+        return grid;
+    }
+
+    assignQuestions(qTypes, qDifficulties) {
+        var grid = [];
+        for(var row = 0 ; row < GRID_DIMENSIONS.X ; row++) {
+            var currCol = [];
+            for(var col = 0 ; col < GRID_DIMENSIONS.Y ; col++) {
+                console.log(qTypes, qDifficulties);
+                var qCategory = qTypes[row][col];
+                var qDifficulty = qDifficulties[row][col];
+                console.log(qCategory, qDifficulty);
+                var question = getRandomQuestionFiltered(qDifficulty, qCategory);
+                currCol.push(question);
+            }
+            grid.push(currCol);
         }
         return grid;
     }

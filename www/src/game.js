@@ -1,5 +1,7 @@
 import InputHandler from "./input.js";
 import { setUppermostPanel, setUpperPanel, createMapGridPanel } from "./logic/display.js";
+import MapGrid from "./assets/domain/mapGrid/mapGrid.js";
+import { GRID_POWER_UPS } from "./assets/domain/mapGrid/gridPowerUps.js";
 
 const SPEED = 100;  // DEFAULT
 
@@ -20,9 +22,19 @@ export default class Game {
 
         this.gameObjects = {};
 
-        this.createMainObjects();
-
         this.speedCycle = 100 - SPEED;
+
+        this.PLAYER_SCORES = [0, 0];
+        this.PLAYER_POWER_UPS = [
+            [0, 0, 1, 0, 0, 1, 1, 1, 1, 0]
+            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+        this.ACTIVE_FILTER_INDEX = 0;
+
+        this.mapGrid = new MapGrid(this);
+        console.log(this.mapGrid);
+
+        this.createMainObjects();
 
     }
 
