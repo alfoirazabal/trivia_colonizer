@@ -13,6 +13,7 @@ http.createServer(function(req, res) {
             return;
         }
         if(req.url.substr(-3, 3) === ".js") res.setHeader("Content-Type", "application/javascript");
+        if(req.url.substr(-16, 16) === ".triviaQuestions") res.setHeader("Content-Type", "application/javascript");
         res.writeHead(200);
         res.end(data);
     });

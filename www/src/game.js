@@ -6,6 +6,7 @@ import UIImage from "./assets/display/predef/uiimage.js";
 import MapGrid, { GRID_DIMENSIONS, GRID_TILE_SIZE, GRID_POSITION_COLORS } from "./assets/domain/mapGrid/mapGrid.js";
 import { GRID_POWER_UPS } from "./assets/domain/mapGrid/gridPowerUps.js";
 import { GRID_FILTER_OPTIONS, GRID_FILTER_BUTTONS_POSITIONING } from "./assets/domain/mapGrid/gridsFilter.js";
+import { ALL_TRIVIA_QUESTIONS } from "../allTriviaQuestions.triviaQuestions";
 
 const SPEED = 100;  // DEFAULT
 
@@ -169,6 +170,70 @@ export default class Game {
                     );
                     game.gameObjects.mapFilterPanel.addChild(filterButton);
                 }
+                // Preparing Questions Panel (LOGIC)
+                game.gameObjects.panelQuestions = new Panel({x: 0, y: 545}, {x: game.gameWidth, y: 175}, "#111");
+                var randQuest = ALL_TRIVIA_QUESTIONS[Math.floor(Math.random() * ALL_TRIVIA_QUESTIONS.length)];
+                var randQuestionText = randQuest.question.split("&quot;").join("\"").split("&#039;").join("'");
+                var lblQuestion = new Label({x: 20, y:38}, randQuestionText);
+                lblQuestion.setFont("18px Arial");
+                game.gameObjects.panelQuestions.addChild(lblQuestion);
+                var answerValues = [];
+                if (randQuest.incorrect_answers.length === 1) {  // True or False
+                    var correctAnswerIndex = Math.floor(Math.random() * 2);
+                    for(var i = 0 ; i < 2 ; i++) {
+                        if (i === correctAnswerIndex) {
+                            answerValues[i] = randQuest.correct_answer;
+                        } else {
+                            answerValues[i] = randQuest.incorrect_answers[0];
+                        }
+                    }
+                } else {    // 4 Possible Answers
+                    var nBtnCorrectAnswer = Math.floor(Math.random() * 4);
+                    var currentIncorrectAnswerIndex = 0;
+                    var currentIncorrectAnswerIndexes = (() => {
+                        // Mixing of Fischer-Yates
+                        var randInd = [0, 1, 2];
+                        for(var i = 0 ; i < randInd.length ; i++) {
+                            for(var j = i ; j < randInd.length ; j++) {
+                                var randIndex1 = Math.floor(Math.random() * randInd.length);
+                                var randIndex2 = Math.floor(Math.random() * randInd.length);
+                                var rand1 = randInd[randIndex1];
+                                var rand2 = randInd[randIndex2];
+                                var aux = rand1;
+                                randInd[randIndex1] = rand2;
+                                randInd[randIndex2] = rand1;                   
+                            }
+                        }
+                        return randInd;
+                    })();
+                    console.log(currentIncorrectAnswerIndexes);
+                    for(var i = 0 ; i < 4 ; i++) {
+                        if (i === nBtnCorrectAnswer) {
+                            console.log("FALL ON: " + i);
+                            answerValues.push(randQuest.correct_answer);
+                        } else {
+                            answerValues.push(randQuest.incorrect_answers[currentIncorrectAnswerIndexes[currentIncorrectAnswerIndex]]);
+                            currentIncorrectAnswerIndex++;
+                        }
+                    }
+                }
+                // Drawing Questions Panel
+                if (answerValues.length === 2) {  // True or False
+                    var buttonAnswer0 = Button.createButtonText({x: 20, y: 80}, answerValues[0], {x: 570, y: 40});
+                    var buttonAnswer1 = Button.createButtonText({x: game.gameWidth - 20 - 570, y: 80}, answerValues[1], {x: 570, y: 40});
+                    game.gameObjects.panelQuestions.addChild(buttonAnswer0);
+                    game.gameObjects.panelQuestions.addChild(buttonAnswer1);
+                } else {    // 4 Possible Answers
+                    var buttonAnswer0 = Button.createButtonText({x: 20, y: 55}, answerValues[0], {x: 570, y: 40});
+                    var buttonAnswer1 = Button.createButtonText({x: game.gameWidth - 20 - 570, y: 55}, answerValues[1], {x: 570, y: 40});
+                    var buttonAnswer2 = Button.createButtonText({x: 20, y: 110}, answerValues[2], {x: 570, y: 40});
+                    var buttonAnswer3 = Button.createButtonText({x: game.gameWidth - 20 - 570, y: 110}, answerValues[3], {x: 570, y: 40});
+                    game.gameObjects.panelQuestions.addChild(buttonAnswer0);
+                    game.gameObjects.panelQuestions.addChild(buttonAnswer1);
+                    game.gameObjects.panelQuestions.addChild(buttonAnswer2);
+                    game.gameObjects.panelQuestions.addChild(buttonAnswer3);
+                }
+                console.log(answerValues);
             }
         }
     }
