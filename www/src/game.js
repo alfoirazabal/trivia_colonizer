@@ -1,7 +1,9 @@
 import InputHandler from "./input.js";
-import { setUppermostPanel, setUpperPanel, createMapGridPanel } from "./logic/display.js";
+import { setUppermostPanel, setUpperPanel, createMapGridPanel, drawMapFilterPanel, drawPanelQuestion } from "./logic/display.js";
 import MapGrid from "./assets/domain/mapGrid/mapGrid.js";
 import { GRID_POWER_UPS } from "./assets/domain/mapGrid/gridPowerUps.js";
+import { getRandomQuestion } from "./logic/works.js";
+import Player from "./assets/domain/player.js";
 
 const SPEED = 100;  // DEFAULT
 
@@ -24,12 +26,14 @@ export default class Game {
 
         this.speedCycle = 100 - SPEED;
 
-        this.PLAYER_SCORES = [0, 0];
-        this.PLAYER_POWER_UPS = [
-            [0, 0, 1, 0, 0, 1, 1, 1, 1, 0]
-            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
-        ];
         this.ACTIVE_FILTER_INDEX = 0;
+
+        this.players = [
+            new Player(this, "#f00"),
+            new Player(this, "#00f")
+        ];
+        this.players[0].powerUps[3] = true;
+        this.players[1].powerUps[2] = true;
 
         this.mapGrid = new MapGrid(this);
         console.log(this.mapGrid);
@@ -58,6 +62,11 @@ export default class Game {
         setUppermostPanel(this);        
         setUpperPanel(this);
         createMapGridPanel(this);
+        drawMapFilterPanel(this);
+        // Preparing Questions Panel (LOGIC)
+        var question = getRandomQuestion();
+        // Drawing Questions Panel
+        drawPanelQuestion(this, question);
     }
 
 }
