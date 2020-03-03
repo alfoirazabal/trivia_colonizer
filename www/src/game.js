@@ -29,13 +29,19 @@ export default class Game {
         this.ACTIVE_FILTER_INDEX = 0;
 
         this.players = [
-            new Player(this, "#f00"),
-            new Player(this, "#00f")
+            new Player(this, 1, 255, 0, 0),
+            new Player(this, 2, 0, 0, 255)
         ];
         this.players[0].powerUps[3] = true;
         this.players[1].powerUps[2] = true;
 
         this.mapGrid = new MapGrid(this);
+
+        this.mapGrid.grid.dominatingPlayer[2][3] = this.players[0];
+        this.mapGrid.grid.dominatingPlayer[3][2] = this.players[1];
+        this.mapGrid.grid.dominatingPlayer[0][0] = this.players[0];
+        this.mapGrid.grid.dominatingPlayer[4][15] = this.players[1];
+
         console.log(this.mapGrid);
 
         this.createMainObjects();
