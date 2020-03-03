@@ -1,5 +1,5 @@
 import { ALL_TRIVIA_QUESTIONS } from "../../allTriviaQuestions.triviaQuestions";
-import { QUESTION_DIFFICULTIES } from "../assets/domain/mapGrid/mapGrid.js";
+import { QUESTION_DIFFICULTIES, GRID_DIMENSIONS } from "../assets/domain/mapGrid/mapGrid.js";
 import { QUESTION_TYPES } from "../assets/domain/mapGrid/questionTypes.js";
 
 export function getRandomQuestionFiltered(difficulty, category) {
@@ -12,7 +12,6 @@ export function getRandomQuestionFiltered(difficulty, category) {
             qCategories.push(qSubCat.descriptor);
         }
     }
-    console.log(qDifficulty, qCategories);
     var filteredQuestions = ALL_TRIVIA_QUESTIONS.filter(e => {
         if (qCategories.includes(e.category) && e.difficulty === qDifficulty) {
             return true;
@@ -21,12 +20,28 @@ export function getRandomQuestionFiltered(difficulty, category) {
         }
     });
     var qFromFiltered = getQuestionFromFiltered(filteredQuestions);
-    console.log(qFromFiltered);
     return qFromFiltered;
 }
 
 export function getRandomQuestion() {
     return getQuestionFromFiltered(ALL_TRIVIA_QUESTIONS);
+}
+
+export function getPowerUpsArray(game) {
+    const powerUpsArray = [];
+    for(var col = 0 ; col < GRID_DIMENSIONS.Y ; col++) {
+        for(var row = 0 ; row < GRID_DIMENSIONS.X ; row++) {
+            var powerUpValue = game.mapGrid.grid.powerUpsGrid[row][col];
+            if (powerUpValue !== null) {
+                powerUpsArray.push({
+                    value: powerUpValue,
+                    row,
+                    col
+                });
+            }
+        }
+    }
+    return powerUpsArray;
 }
 
 function getQuestionFromFiltered(triviaQuestions) {

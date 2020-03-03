@@ -44,7 +44,7 @@ export default class MapGrid {
         for(var row = 0 ; row < GRID_DIMENSIONS.X ; row++) {
             var currentRow = [];
             for(var col = 0 ; col < GRID_DIMENSIONS.Y ; col++) {
-                currentRow.push(0);
+                currentRow.push(null);
             }
             grid.push(currentRow);
         }
@@ -130,10 +130,8 @@ export default class MapGrid {
         for(var row = 0 ; row < GRID_DIMENSIONS.X ; row++) {
             var currCol = [];
             for(var col = 0 ; col < GRID_DIMENSIONS.Y ; col++) {
-                console.log(qTypes, qDifficulties);
                 var qCategory = qTypes[row][col];
                 var qDifficulty = qDifficulties[row][col];
-                console.log(qCategory, qDifficulty);
                 var question = getRandomQuestionFiltered(qDifficulty, qCategory);
                 currCol.push(question);
             }

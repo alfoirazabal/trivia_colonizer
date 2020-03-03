@@ -1,7 +1,7 @@
 import Panel from "../assets/display/predef/panel.js";
 import { Label } from "../assets/display/predef/label.js";
 import { Button } from "../assets/display/predef/button.js";
-import { getRandomQuestion } from "./works.js";
+import { getRandomQuestion, getPowerUpsArray } from "./works.js";
 import UIImage from "../assets/display/predef/uiimage.js";
 import { GRID_DIMENSIONS, GRID_TILE_SIZE, GRID_POSITION_COLORS } from "../assets/domain/mapGrid/mapGrid.js";
 import { GRID_POWER_UPS } from "../assets/domain/mapGrid/gridPowerUps.js";
@@ -73,7 +73,7 @@ export function setUpperPanel(game) {
         var labelPNumber = new Label({x: 10, y: 60}, "P" + playerNumber);
         labelPNumber.setFont("60px Arial");
         game.gameObjects[upperPanelName].addChild(labelPNumber);
-        var labelPScore = new Label({x: 90, y: 30}, "Score: " + game.PLAYER_SCORES[playerNumber - 1]);
+        var labelPScore = new Label({x: 90, y: 30}, "Score: " + game.players[playerNumber - 1].score);
         labelPScore.setFont("20px Arial");
         game.gameObjects[upperPanelName].addChild(labelPScore);
         var labelPowerUps = new Label({x: 90, y: 60}, "Power Ups: ");
@@ -86,56 +86,74 @@ export function setUpperPanel(game) {
 }
 
 export function createMapGridPanel(game) {
-    game.gameObjects.mapGridPanel = new Panel(
+    switch (game.ACTIVE_FILTER_INDEX) {
+        case 0:
+            drawDominatingPlayersGrid();
+            break;
+        case 1:
+            break;
+        case 2:
+            break;
+    }
+    function drawDominatingPlayersGrid() {
+        game.gameObjects.mapGridPanel = new Panel(
             {x: 0, y: 105},
             {x: 1280, y: 400},
             "#222"
-    );
-    // Creating Default Grids...
-    for(var col = 0 ; col < GRID_DIMENSIONS.X ; col++) {
-        for(var row = 0 ; row < GRID_DIMENSIONS.Y ; row++) {
-            var currentColorIndex = 
-                    (row + col) % GRID_POSITION_COLORS.length;
-            var panelInPosition = new Panel(
-                    {
-                        x: row * GRID_TILE_SIZE,
-                        y: col * GRID_TILE_SIZE
-                    },
-                    {
-                        x: GRID_TILE_SIZE,
-                        y: GRID_TILE_SIZE
-                    },
-                    GRID_POSITION_COLORS[currentColorIndex]
-            );
-            game.gameObjects.mapGridPanel.addChild(
-                    panelInPosition
-            );
-        }
-    }
-    // Drawing MapGrid PowerUps...
-    var currentPowerUpInPlayersPanel = 0;
-    for(var col = 0 ; col < GRID_DIMENSIONS.Y ; col++) {
-        for(var row = 0 ; row < GRID_DIMENSIONS.X ; row++) {
-            var powerUpValue = game.mapGrid.grid.powerUpsGrid[row][col];
-            if(powerUpValue !== null) {
-                drawPowerUpInGrid(row, col, powerUpValue);
-                drawPowerUpInPlayerPanel(1, powerUpValue, currentPowerUpInPlayersPanel);
-                drawPowerUpInPlayerPanel(2, powerUpValue, currentPowerUpInPlayersPanel);
-                currentPowerUpInPlayersPanel++;
+        );
+        // Creating Default Grids...
+        for(var col = 0 ; col < GRID_DIMENSIONS.X ; col++) {
+            for(var row = 0 ; row < GRID_DIMENSIONS.Y ; row++) {
+                var currentColorIndex = 
+                        (row + col) % GRID_POSITION_COLORS.length;
+                var panelInPosition = new Panel(
+                        {
+                            x: row * GRID_TILE_SIZE,
+                            y: col * GRID_TILE_SIZE
+                        },
+                        {
+                            x: GRID_TILE_SIZE,
+                            y: GRID_TILE_SIZE
+                        },
+                        GRID_POSITION_COLORS[currentColorIndex]
+                );
+                game.gameObjects.mapGridPanel.addChild(
+                        panelInPosition
+                );
             }
         }
+        drawMapGridPowerUps();
+        drawColorsForDominatingPlayers();
+        
+        function drawMapGridPowerUps() {
+            var powerUpsArray = getPowerUpsArray(game);
+            var currentPowerUpInPlayersPanel = 0;
+            for (var powerUp of powerUpsArray) {
+                drawPowerUpInGrid(powerUp.row, powerUp.col, powerUp.value);
+                drawPowerUpInPlayerPanel(1, powerUp.value, currentPowerUpInPlayersPanel);
+                drawPowerUpInPlayerPanel(2, powerUp.value, currentPowerUpInPlayersPanel);
+                currentPowerUpInPlayersPanel++;
+            }
+            function drawPowerUpInGrid(row, col, powerUpValue) {
+                var gridPowerUp = GRID_POWER_UPS[powerUpValue];
+                var powerUpImage = new UIImage({x: col * GRID_TILE_SIZE, y: row * GRID_TILE_SIZE}, gridPowerUp.image, {x: 80, y: 80});
+                game.gameObjects.mapGridPanel.addChild(powerUpImage);
+            }
+            function drawPowerUpInPlayerPanel(playerNumber, powerUpValue, powerUpPanelIndexPosition) {
+                var powerUpImage = GRID_POWER_UPS[powerUpValue].image;
+                var panel = game.gameObjects[PLAYERS_UPPER_PANEL_OBJECT_NAMES + playerNumber].gameObjectsChildren[3];
+                var powerUpImage = new UIImage({x: powerUpPanelIndexPosition * 30, y: 0}, powerUpImage, {x: 30, y: 30});
+                panel.addChild(powerUpImage);
+            }
+        }
+
+        function drawColorsForDominatingPlayers() {
+            // Draw colors for each dominating player...
+        }
     }
-    function drawPowerUpInGrid(row, col, powerUpValue) {
-        var gridPowerUp = GRID_POWER_UPS[powerUpValue];
-        var powerUpImage = new UIImage({x: col * GRID_TILE_SIZE, y: row * GRID_TILE_SIZE}, gridPowerUp.image);
-        game.gameObjects.mapGridPanel.addChild(powerUpImage);
-    }
-    function drawPowerUpInPlayerPanel(playerNumber, powerUpValue, powerUpPanelIndexPosition) {
-        var powerUpImage = GRID_POWER_UPS[powerUpValue].image;
-        var panel = game.gameObjects[PLAYERS_UPPER_PANEL_OBJECT_NAMES + playerNumber].gameObjectsChildren[3];
-        var powerUpImage = new UIImage({x: powerUpPanelIndexPosition * 30, y: 0}, powerUpImage, {x: 30, y: 30});
-        panel.addChild(powerUpImage);
-    }
+}
+
+export function drawMapFilterPanel(game) {
     // Drawing Map Filter Panel
     var mapFilterPanel = new Panel({x: 0, y: 505}, {x: game.gameWidth, y: 40}, "#333");
     game.gameObjects.mapFilterPanel = mapFilterPanel;
@@ -163,8 +181,4 @@ export function createMapGridPanel(game) {
         );
         game.gameObjects.mapFilterPanel.addChild(filterButton);
     }
-    // Preparing Questions Panel (LOGIC)
-    var question = getRandomQuestion();
-    // Drawing Questions Panel
-    drawPanelQuestion(game, question);
 }
