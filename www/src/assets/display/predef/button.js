@@ -8,24 +8,6 @@ export class Button extends GameObject {
     constructor(position, image, text, size) {
         super(position);
 
-        const thisObj = this;
-
-        this.hovering = false;
-        document.addEventListener("mousemove", function(event) {
-            const x = event.clientX;
-            const y = event.clientY;
-            if(thisObj.position.x <= x && thisObj.position.y <= y) {
-                const limitXObj = thisObj.position.x + thisObj.size.x;
-                const limitYObj = thisObj.position.y + thisObj.size.y;
-                if(limitXObj >= x && limitYObj >= y) {
-                    thisObj.triggerHover();
-                    this.hovering = true;
-                }
-            } else {
-                this.hovering = false;
-            }
-        });
-
         this.color = "#fff";
         this.textColor = "#000";
 
@@ -34,9 +16,6 @@ export class Button extends GameObject {
         } else {
             this.size = size;
         }
-
-        this.hoverColBackground = "#4f4";
-        this.hoverColForeground = "#911";
 
         if(image === null) {
             this.buttonType = "text";
@@ -89,11 +68,6 @@ export class Button extends GameObject {
     draw(ctx) {
         // BUG: this.hovering is never true inside this method
         ctx.font = DEFAULT_BUTTON_TEXT_SIZE + "px Arial";
-        if (this.hovering) {
-            ctx.fillStyle = this.hoverColBackground;
-        } else {
-            ctx.fillStyle = this.color;
-        }
         if(this.size.x === undefined){
             this.size.x = ctx.measureText(this.text).width + 
                     DEFAULT_BUTTON_HORIZONTAL_MARGIN * 2;
@@ -101,6 +75,7 @@ export class Button extends GameObject {
         if(this.size.y === undefined) {
             this.size.y = DEFAULT_BUTTON_TEXT_SIZE * 2;
         }
+        ctx.fillStyle = this.color;
         ctx.fillRect(
             this.position.x,
             this.position.y,

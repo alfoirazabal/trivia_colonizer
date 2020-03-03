@@ -41,6 +41,13 @@ export function drawPanelQuestion(game, question) {
 export function setUppermostPanel(game) {
     game.gameObjects.uppermostPanel =
             new Panel({x: 0, y: 0}, {x: game.gameWidth, y: 25}, "#222");
+    var lblHoverInfo = new Label({x: 20, y: 18}, "dgsdf");
+    lblHoverInfo.setFont("15px Arial");
+    game.gameObjects.uppermostPanel.addChild(lblHoverInfo);
+    lblHoverInfo.setHoverInfotext = function(text) {
+        lblHoverInfo.text = text;
+    }
+    game.gameObjects.uppermostPanel.lblInfo = lblHoverInfo;
     var buttonText = Button.createButtonText({x: 1190, y:0}, "MENU", {x: 90, y: 25});
     buttonText.triggerClick = function() {
         console.log("LBC");
@@ -49,7 +56,10 @@ export function setUppermostPanel(game) {
         console.log(game.gameObjects);
     }
     buttonText.triggerHover = function() {
-        console.log("LBCHover");
+        game.gameObjects.uppermostPanel.lblInfo.setHoverInfotext("Go to Menu!");
+    }
+    buttonText.triggerUnHover = function() {
+        game.gameObjects.uppermostPanel.lblInfo.setHoverInfotext("");
     }
     game.gameObjects.uppermostPanel.addChild(buttonText);
 }
@@ -65,6 +75,9 @@ export function setUpperPanel(game) {
         switch(playerNumber) {
             case 1:
                 game.gameObjects[upperPanelName] = new Panel({x: 0, y: 25}, {x: game.gameWidth / 2, y: 80}, "#666");
+                game.gameObjects[upperPanelName].triggerHover = function() {
+                    console.log("OVER PANEL");
+                }
                 break;
             case 2:
                 game.gameObjects[upperPanelName] = new Panel({x: game.gameWidth / 2, y: 25}, {x: game.gameWidth / 2, y: 80}, "#888");
@@ -143,7 +156,6 @@ export function createMapGridPanel(game) {
                 var powerUpImage;
                 if (player.powerUps[powerUpPanelIndexPosition]) {
                     powerUpImage = GRID_POWER_UPS[powerUpValue].image_available;
-                    console.log(powerUpImage);
                 } else {
                     powerUpImage = GRID_POWER_UPS[powerUpValue].image;
                 }

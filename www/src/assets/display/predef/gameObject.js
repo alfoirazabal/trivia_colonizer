@@ -9,19 +9,38 @@ export default class GameObject {
         const thisObj = this;
 
         document.addEventListener("click", function(event) {
-            const x = event.clientX;
-            const y = event.clientY;
-            if(thisObj.position.x <= x && thisObj.position.y <= y) {
-                const limitXObj = thisObj.position.x + thisObj.size.x;
-                const limitYObj = thisObj.position.y + thisObj.size.y;
-                if(limitXObj >= x && limitYObj >= y) {
-                    thisObj.triggerClick();
+            if(thisObj.size !== undefined) {
+                const x = event.clientX;
+                const y = event.clientY;
+                if(thisObj.position.x <= x && thisObj.position.y <= y) {
+                    const limitXObj = thisObj.position.x + thisObj.size.x;
+                    const limitYObj = thisObj.position.y + thisObj.size.y;
+                    if(limitXObj >= x && limitYObj >= y) {
+                        thisObj.triggerClick();
+                    }
+                }
+            }
+        });
+
+        document.addEventListener("mousemove", function(event) {
+            if(thisObj.size !== undefined) {
+                const x = event.clientX;
+                const y = event.clientY;
+                if(thisObj.position.x <= x && thisObj.position.y <= y) {
+                    const limitXObj = thisObj.position.x + thisObj.size.x;
+                    const limitYObj = thisObj.position.y + thisObj.size.y;
+                    if(limitXObj >= x && limitYObj >= y) {
+                        thisObj.triggerHover();
+                    }
+                } else {
+                    thisObj.triggerUnHover();
                 }
             }
         });
 
         this.triggerClick = function(){};
         this.triggerHover = function(){};
+        this.triggerUnHover = function(){};
     }
 
     update(deltaTime) {
@@ -37,6 +56,7 @@ export default class GameObject {
                 this.position, gameObject.position
         );
         this.gameObjectsChildren.push(gameObject);
+        return gameObject;
     }
 
     addChildFixedPosition(gameObject) {
