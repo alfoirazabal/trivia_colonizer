@@ -6,6 +6,7 @@ import UIImage from "../assets/display/predef/uiimage.js";
 import { GRID_DIMENSIONS, GRID_TILE_SIZE, GRID_POSITION_COLORS } from "../assets/domain/mapGrid/mapGrid.js";
 import { GRID_POWER_UPS } from "../assets/domain/mapGrid/gridPowerUps.js";
 import { GRID_FILTER_OPTIONS, GRID_FILTER_BUTTONS_POSITIONING } from "../assets/domain/mapGrid/gridsFilter.js";
+import GameObject from "../assets/display/predef/gameObject.js";
 
 const PLAYERS_UPPER_PANEL_OBJECT_NAMES = "upperPanelP";
 
@@ -48,6 +49,7 @@ export function setUppermostPanel(game) {
         lblHoverInfo.text = text;
     }
     game.gameObjects.uppermostPanel.lblInfo = lblHoverInfo;
+    GameObject.GAME_DEFAULT_INFO_LABEL = lblHoverInfo;
     var buttonText = Button.createButtonText({x: 1190, y:0}, "MENU", {x: 90, y: 25});
     buttonText.triggerClick = function() {
         console.log("LBC");
@@ -55,13 +57,9 @@ export function setUppermostPanel(game) {
         drawPanelQuestion(game, question);
         console.log(game.gameObjects);
     }
-    buttonText.triggerHover = function() {
-        game.gameObjects.uppermostPanel.lblInfo.setHoverInfotext("Go to Menu!");
-    }
-    buttonText.triggerUnHover = function() {
-        game.gameObjects.uppermostPanel.lblInfo.setHoverInfotext("");
-    }
+    buttonText.buildLabelInfoText("GOTOMENU!");
     game.gameObjects.uppermostPanel.addChild(buttonText);
+    
 }
 
 export function setUpperPanel(game) {
@@ -70,19 +68,20 @@ export function setUpperPanel(game) {
 
     console.log(game.gameObjects);
 
+    console.log("GDIL");
+    console.log(GameObject.GAME_DEFAULT_INFO_LABEL);
+
     function createPlayerUpperPanel(game, playerNumber) {
         var upperPanelName = PLAYERS_UPPER_PANEL_OBJECT_NAMES + playerNumber;
         switch(playerNumber) {
             case 1:
                 game.gameObjects[upperPanelName] = new Panel({x: 0, y: 25}, {x: game.gameWidth / 2, y: 80}, "#666");
-                game.gameObjects[upperPanelName].triggerHover = function() {
-                    console.log("OVER PANEL");
-                }
                 break;
             case 2:
                 game.gameObjects[upperPanelName] = new Panel({x: game.gameWidth / 2, y: 25}, {x: game.gameWidth / 2, y: 80}, "#888");
                 break;
         }
+        game.gameObjects[upperPanelName].buildLabelInfoText("PANEL");
         var labelPNumber = new Label({x: 10, y: 60}, "P" + playerNumber);
         labelPNumber.setFont("60px Arial");
         game.gameObjects[upperPanelName].addChild(labelPNumber);

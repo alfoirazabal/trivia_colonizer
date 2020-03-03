@@ -2,6 +2,8 @@ import newPositionFromRelative from "./helpers.js";
 
 export default class GameObject {
 
+    static GAME_DEFAULT_INFO_LABEL;
+
     constructor(position) {
         this.position = position;
         this.gameObjectsChildren = [];
@@ -26,21 +28,26 @@ export default class GameObject {
             if(thisObj.size !== undefined) {
                 const x = event.clientX;
                 const y = event.clientY;
+                const limitXObj = thisObj.position.x + thisObj.size.x;
+                const limitYObj = thisObj.position.y + thisObj.size.y;
                 if(thisObj.position.x <= x && thisObj.position.y <= y) {
-                    const limitXObj = thisObj.position.x + thisObj.size.x;
-                    const limitYObj = thisObj.position.y + thisObj.size.y;
                     if(limitXObj >= x && limitYObj >= y) {
                         thisObj.triggerHover();
+                        thisObj.triggerHoverLabelInfo();
                     }
-                } else {
-                    thisObj.triggerUnHover();
                 }
             }
         });
 
         this.triggerClick = function(){};
         this.triggerHover = function(){};
-        this.triggerUnHover = function(){};
+        this.triggerHoverLabelInfo = function() {   
+            if (thisObj.labelInfoText !== undefined) {
+                GameObject.GAME_DEFAULT_INFO_LABEL.text = thisObj.labelInfoText;
+            } else {                
+                GameObject.GAME_DEFAULT_INFO_LABEL.text = "";
+            }
+        }
     }
 
     update(deltaTime) {
@@ -61,6 +68,10 @@ export default class GameObject {
 
     addChildFixedPosition(gameObject) {
         this.gameObjectsChildren.push(gameObject);
+    }
+
+    buildLabelInfoText(labelInfoText) {
+        this.labelInfoText = labelInfoText;
     }
 
 }

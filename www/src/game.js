@@ -4,6 +4,7 @@ import MapGrid from "./assets/domain/mapGrid/mapGrid.js";
 import { GRID_POWER_UPS } from "./assets/domain/mapGrid/gridPowerUps.js";
 import { getRandomQuestion } from "./logic/works.js";
 import Player from "./assets/domain/player.js";
+import GameObject from "./assets/display/predef/gameObject.js";
 
 const SPEED = 100;  // DEFAULT
 
