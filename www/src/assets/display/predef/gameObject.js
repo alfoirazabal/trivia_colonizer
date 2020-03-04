@@ -10,35 +10,6 @@ export default class GameObject {
 
         const thisObj = this;
 
-        document.addEventListener("click", function(event) {
-            if(thisObj.size !== undefined) {
-                const x = event.clientX;
-                const y = event.clientY;
-                if(thisObj.position.x <= x && thisObj.position.y <= y) {
-                    const limitXObj = thisObj.position.x + thisObj.size.x;
-                    const limitYObj = thisObj.position.y + thisObj.size.y;
-                    if(limitXObj >= x && limitYObj >= y) {
-                        thisObj.triggerClick();
-                    }
-                }
-            }
-        });
-
-        document.addEventListener("mousemove", function(event) {
-            if(thisObj.size !== undefined) {
-                const x = event.clientX;
-                const y = event.clientY;
-                const limitXObj = thisObj.position.x + thisObj.size.x;
-                const limitYObj = thisObj.position.y + thisObj.size.y;
-                if(thisObj.position.x <= x && thisObj.position.y <= y) {
-                    if(limitXObj >= x && limitYObj >= y) {
-                        thisObj.triggerHover();
-                        thisObj.triggerHoverLabelInfo();
-                    }
-                }
-            }
-        });
-
         this.triggerClick = function(){};
         this.triggerHover = function(){};
         this.triggerHoverLabelInfo = function() {   
@@ -70,8 +41,19 @@ export default class GameObject {
         this.gameObjectsChildren.push(gameObject);
     }
 
-    buildLabelInfoText(labelInfoText) {
+    buildLabelInfoText(labelInfoText, inputHandler) {
+        inputHandler.hoverableObjects.push(this);
         this.labelInfoText = labelInfoText;
+    }
+
+    addClickAction(func, inputHandler) {
+        inputHandler.clickableObjects.push(this);
+        this.triggerClick = func;
+    }
+
+    addHoverAction(func, inputHandler) {
+        inputHandler.hoverableObjects.push(this);
+        this.triggerHover = func;
     }
 
 }

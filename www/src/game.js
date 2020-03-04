@@ -1,5 +1,5 @@
 import InputHandler from "./input.js";
-import { setUppermostPanel, setUpperPanel, createMapGridPanel, drawMapFilterPanel, drawPanelQuestion } from "./logic/display.js";
+import { drawUppermostPanel, drawUpperPanel, createMapGridPanel, drawMapFilterPanel, drawPanelQuestion, drawGameMainView } from "./logic/display.js";
 import MapGrid from "./assets/domain/mapGrid/mapGrid.js";
 import { GRID_POWER_UPS } from "./assets/domain/mapGrid/gridPowerUps.js";
 import { getRandomQuestion } from "./logic/works.js";
@@ -21,13 +21,13 @@ export default class Game {
 
         this.GAME_MODE = GAME_MODES.PLAY;
 
-        new InputHandler(this);
+        this.inputHandler = new InputHandler(this);
 
         this.gameObjects = {};
 
         this.speedCycle = 100 - SPEED;
 
-        this.ACTIVE_FILTER_INDEX = 0;
+        this.ACTIVE_FILTER_INDEX = 1;
 
         this.players = [
             new Player(this, 1, 255, 0, 0),
@@ -43,7 +43,7 @@ export default class Game {
         this.mapGrid.grid.dominatingPlayer[0][0] = this.players[0];
         this.mapGrid.grid.dominatingPlayer[4][15] = this.players[1];
 
-        console.log(this.mapGrid);
+        this.mustUpdateView = true;
 
         this.createMainObjects();
 
@@ -63,13 +63,13 @@ export default class Game {
         for(let gameObject in this.gameObjects) {
             this.gameObjects[gameObject].draw(ctx);
         }
+        if(this.mustUpdateView) {
+            drawGameMainView(this);
+            this.mustUpdateView = false;
+        }
     }
 
     createMainObjects() {
-        setUppermostPanel(this);        
-        setUpperPanel(this);
-        createMapGridPanel(this);
-        drawMapFilterPanel(this);
         // Preparing Questions Panel (LOGIC)
         var question = getRandomQuestion();
         // Drawing Questions Panel

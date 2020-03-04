@@ -22,11 +22,18 @@ export default class UIImage extends GameObject {
 
     }
 
+    setTransparency(transparency) {
+        this.transparency = 0.5;
+    }
+
     update(deltaTime) {
         
     }
 
     draw(ctx) {
+        if(!this.transparency !== undefined) {
+            ctx.globalAlpha = 0.5;
+        }
         ctx.drawImage(
             this.image,
             this.position.x,
@@ -34,6 +41,7 @@ export default class UIImage extends GameObject {
             this.size.x,
             this.size.y
         );
+        ctx.globalAlpha = 1;
     }
 
 }

@@ -7,8 +7,16 @@ import { GRID_DIMENSIONS, GRID_TILE_SIZE, GRID_POSITION_COLORS } from "../assets
 import { GRID_POWER_UPS } from "../assets/domain/mapGrid/gridPowerUps.js";
 import { GRID_FILTER_OPTIONS, GRID_FILTER_BUTTONS_POSITIONING } from "../assets/domain/mapGrid/gridsFilter.js";
 import GameObject from "../assets/display/predef/gameObject.js";
+import { QUESTION_TYPES } from "../assets/domain/mapGrid/questionTypes.js";
 
 const PLAYERS_UPPER_PANEL_OBJECT_NAMES = "upperPanelP";
+
+export function drawGameMainView(game) {
+    drawUppermostPanel(game);
+    drawUpperPanel(game);
+    createMapGridPanel(game);
+    drawMapFilterPanel(game);
+}
 
 export function drawPanelQuestion(game, question) {
 
@@ -35,11 +43,11 @@ export function drawPanelQuestion(game, question) {
         game.gameObjects.panelQuestions.addChild(buttonAnswer2);
         game.gameObjects.panelQuestions.addChild(buttonAnswer3);
     }
-    console.log(question.theAnswers);
 
 }
 
-export function setUppermostPanel(game) {
+export function drawUppermostPanel(game) {
+    removeBeforeRedraw(game, game.gameObjects.uppermostPanel);
     game.gameObjects.uppermostPanel =
             new Panel({x: 0, y: 0}, {x: game.gameWidth, y: 25}, "#222");
     var lblHoverInfo = new Label({x: 20, y: 18}, "dgsdf");
@@ -51,28 +59,25 @@ export function setUppermostPanel(game) {
     game.gameObjects.uppermostPanel.lblInfo = lblHoverInfo;
     GameObject.GAME_DEFAULT_INFO_LABEL = lblHoverInfo;
     var buttonText = Button.createButtonText({x: 1190, y:0}, "MENU", {x: 90, y: 25});
-    buttonText.triggerClick = function() {
+    buttonText.addClickAction(function() {
         console.log("LBC");
         var question = getRandomQuestion(game);
         drawPanelQuestion(game, question);
         console.log(game.gameObjects);
-    }
-    buttonText.buildLabelInfoText("GOTOMENU!");
+    }, game.inputHandler);
+    buttonText.buildLabelInfoText("GOTOMENU!", game.inputHandler);
     game.gameObjects.uppermostPanel.addChild(buttonText);
     
 }
 
-export function setUpperPanel(game) {
+export function drawUpperPanel(game) {
+
     createPlayerUpperPanel(game, 1);
     createPlayerUpperPanel(game, 2);
 
-    console.log(game.gameObjects);
-
-    console.log("GDIL");
-    console.log(GameObject.GAME_DEFAULT_INFO_LABEL);
-
     function createPlayerUpperPanel(game, playerNumber) {
         var upperPanelName = PLAYERS_UPPER_PANEL_OBJECT_NAMES + playerNumber;
+        removeBeforeRedraw(game, game.gameObjects[upperPanelName]);
         switch(playerNumber) {
             case 1:
                 game.gameObjects[upperPanelName] = new Panel({x: 0, y: 25}, {x: game.gameWidth / 2, y: 80}, "#666");
@@ -81,7 +86,7 @@ export function setUpperPanel(game) {
                 game.gameObjects[upperPanelName] = new Panel({x: game.gameWidth / 2, y: 25}, {x: game.gameWidth / 2, y: 80}, "#888");
                 break;
         }
-        game.gameObjects[upperPanelName].buildLabelInfoText("PANEL");
+        game.gameObjects[upperPanelName].buildLabelInfoText("Panel of Player: " + playerNumber, game.inputHandler);
         var labelPNumber = new Label({x: 10, y: 60}, "P" + playerNumber);
         labelPNumber.setFont("60px Arial");
         game.gameObjects[upperPanelName].addChild(labelPNumber);
@@ -103,11 +108,12 @@ export function createMapGridPanel(game) {
             drawDominatingPlayersGrid();
             break;
         case 1:
+            drawQuestionCategoriesGrid();
             break;
         case 2:
             break;
     }
-    function drawDominatingPlayersGrid() {
+    function createDefaultGrid() {
         game.gameObjects.mapGridPanel = new Panel(
             {x: 0, y: 105},
             {x: 1280, y: 400},
@@ -134,33 +140,39 @@ export function createMapGridPanel(game) {
                 );
             }
         }
+        var powerUpsArray = getPowerUpsArray(game);
+        var currentPowerUpInPlayersPanel = 0;
+        for (var powerUp of powerUpsArray) {
+            drawPowerUpInPlayerPanel(game.players[0], powerUp.value, currentPowerUpInPlayersPanel);
+            drawPowerUpInPlayerPanel(game.players[1], powerUp.value, currentPowerUpInPlayersPanel);
+            currentPowerUpInPlayersPanel++;
+        }
+        function drawPowerUpInPlayerPanel(player, powerUpValue, powerUpPanelIndexPosition) {
+            var powerUpImage;
+            if (player.powerUps[powerUpPanelIndexPosition]) {
+                powerUpImage = GRID_POWER_UPS[powerUpValue].image_available;
+            } else {
+                powerUpImage = GRID_POWER_UPS[powerUpValue].image;
+            }
+            var panel = game.gameObjects[PLAYERS_UPPER_PANEL_OBJECT_NAMES + player.playerNumber].gameObjectsChildren[3];
+            var powerUpImage = new UIImage({x: powerUpPanelIndexPosition * 30, y: 0}, powerUpImage, {x: 30, y: 30});
+            panel.addChild(powerUpImage);
+        }
+    }
+    function drawDominatingPlayersGrid() {
+        createDefaultGrid();
         drawMapGridPowerUps();
         drawColorsForDominatingPlayers();
         
         function drawMapGridPowerUps() {
             var powerUpsArray = getPowerUpsArray(game);
-            var currentPowerUpInPlayersPanel = 0;
             for (var powerUp of powerUpsArray) {
                 drawPowerUpInGrid(powerUp.row, powerUp.col, powerUp.value);
-                drawPowerUpInPlayerPanel(game.players[0], powerUp.value, currentPowerUpInPlayersPanel);
-                drawPowerUpInPlayerPanel(game.players[1], powerUp.value, currentPowerUpInPlayersPanel);
-                currentPowerUpInPlayersPanel++;
             }
             function drawPowerUpInGrid(row, col, powerUpValue) {
                 var gridPowerUp = GRID_POWER_UPS[powerUpValue];
                 var powerUpImage = new UIImage({x: col * GRID_TILE_SIZE, y: row * GRID_TILE_SIZE}, gridPowerUp.image, {x: 80, y: 80});
                 game.gameObjects.mapGridPanel.addChild(powerUpImage);
-            }
-            function drawPowerUpInPlayerPanel(player, powerUpValue, powerUpPanelIndexPosition) {
-                var powerUpImage;
-                if (player.powerUps[powerUpPanelIndexPosition]) {
-                    powerUpImage = GRID_POWER_UPS[powerUpValue].image_available;
-                } else {
-                    powerUpImage = GRID_POWER_UPS[powerUpValue].image;
-                }
-                var panel = game.gameObjects[PLAYERS_UPPER_PANEL_OBJECT_NAMES + player.playerNumber].gameObjectsChildren[3];
-                var powerUpImage = new UIImage({x: powerUpPanelIndexPosition * 30, y: 0}, powerUpImage, {x: 30, y: 30});
-                panel.addChild(powerUpImage);
             }
         }
 
@@ -177,14 +189,27 @@ export function createMapGridPanel(game) {
                     }
                 }
             }
-            console.log(game.mapGrid.grid.dominatingPlayer);
+        }
+    }
+    function drawQuestionCategoriesGrid() {
+        createDefaultGrid();
+        var categoriesGrid = game.mapGrid.grid.questionTypes;
+        for(var col = 0 ; col < GRID_DIMENSIONS.X ; col++) {
+            for(var row = 0 ; row < GRID_DIMENSIONS.Y ; row++) {
+                var currPosition = {x: GRID_TILE_SIZE * row, y: GRID_TILE_SIZE * col};
+                var defaultSize = {x: GRID_TILE_SIZE, y: GRID_TILE_SIZE};
+                var currCategory = QUESTION_TYPES[categoriesGrid[col][row]];
+                var catImage = new UIImage(currPosition, currCategory.image, defaultSize);
+                game.gameObjects.mapGridPanel.addChild(catImage);
+            }
         }
     }
 }
 
 export function drawMapFilterPanel(game) {
+    removeBeforeRedraw(game, game.gameObjects.mapFilterPanel);
     // Drawing Map Filter Panel
-    var mapFilterPanel = new Panel({x: 0, y: 505}, {x: game.gameWidth, y: 40}, "#333");
+    var mapFilterPanel = new Panel({x: 0, y: 505}, {x: game.gameWidth, y: 40}, "#333");    
     game.gameObjects.mapFilterPanel = mapFilterPanel;
     var labelMapFilter = new Label({x: 20, y: 25}, "Map Filter: ");
     labelMapFilter.setFont("18px Arial");
@@ -208,6 +233,24 @@ export function drawMapFilterPanel(game) {
             filterImage,
             {x: filterButtonSize, y: filterButtonSize}
         );
+        filterButton.iValue = i;
+        filterButton.triggerClick = function() {
+            game.ACTIVE_FILTER_INDEX = this.iValue;
+            game.mustUpdateView = true;
+            console.log("OK");
+            console.log(game.inputHandler);
+        };
         game.gameObjects.mapFilterPanel.addChild(filterButton);
+        game.inputHandler.clickableObjects.push(filterButton);
+
+    }
+}
+
+function removeBeforeRedraw(game, motherObject) {
+    if(motherObject !== undefined) {
+        game.inputHandler.remove(motherObject);
+        for(var gObjC of motherObject.gameObjectsChildren) {
+            game.inputHandler.remove(gObjC);
+        }
     }
 }
