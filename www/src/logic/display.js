@@ -3,7 +3,7 @@ import { Label } from "../assets/display/predef/label.js";
 import { Button } from "../assets/display/predef/button.js";
 import { getRandomQuestion, getPowerUpsArray } from "./works.js";
 import UIImage from "../assets/display/predef/uiimage.js";
-import { GRID_DIMENSIONS, GRID_TILE_SIZE, GRID_POSITION_COLORS } from "../assets/domain/mapGrid/mapGrid.js";
+import { GRID_DIMENSIONS, GRID_TILE_SIZE, GRID_POSITION_COLORS, QUESTION_DIFFICULTIES } from "../assets/domain/mapGrid/mapGrid.js";
 import { GRID_POWER_UPS } from "../assets/domain/mapGrid/gridPowerUps.js";
 import { GRID_FILTER_OPTIONS, GRID_FILTER_BUTTONS_POSITIONING } from "../assets/domain/mapGrid/gridsFilter.js";
 import GameObject from "../assets/display/predef/gameObject.js";
@@ -50,7 +50,7 @@ export function drawUppermostPanel(game) {
     removeBeforeRedraw(game, game.gameObjects.uppermostPanel);
     game.gameObjects.uppermostPanel =
             new Panel({x: 0, y: 0}, {x: game.gameWidth, y: 25}, "#222");
-    var lblHoverInfo = new Label({x: 20, y: 18}, "dgsdf");
+    var lblHoverInfo = new Label({x: 20, y: 18}, "");
     lblHoverInfo.setFont("15px Arial");
     game.gameObjects.uppermostPanel.addChild(lblHoverInfo);
     lblHoverInfo.setHoverInfotext = function(text) {
@@ -111,9 +111,11 @@ export function createMapGridPanel(game) {
             drawQuestionCategoriesGrid();
             break;
         case 2:
+            drawQuestionDifficultiesGrid();
             break;
     }
     function createDefaultGrid() {
+        removeBeforeRedraw(game, game.gameObjects.mapGridPanel);
         game.gameObjects.mapGridPanel = new Panel(
             {x: 0, y: 105},
             {x: 1280, y: 400},
@@ -200,7 +202,21 @@ export function createMapGridPanel(game) {
                 var defaultSize = {x: GRID_TILE_SIZE, y: GRID_TILE_SIZE};
                 var currCategory = QUESTION_TYPES[categoriesGrid[col][row]];
                 var catImage = new UIImage(currPosition, currCategory.image, defaultSize);
+                catImage.category = currCategory;
+                catImage.buildLabelInfoText(catImage.category.descriptor, game.inputHandler);
                 game.gameObjects.mapGridPanel.addChild(catImage);
+            }
+        }
+    }
+    function drawQuestionDifficultiesGrid() {
+        var questionDifficulties = game.mapGrid.grid.questionDifficulties;
+        for(var col = 0 ; col < GRID_DIMENSIONS.X ; col++) {
+            for(var row = 0 ; row < GRID_DIMENSIONS.Y ; row++) {
+                var currPosition = {x: GRID_TILE_SIZE * row, y: GRID_TILE_SIZE * col};
+                var defaultSize = {x: GRID_TILE_SIZE, y: GRID_TILE_SIZE};
+                var qDifficulty = QUESTION_DIFFICULTIES[questionDifficulties[col][row]];
+                var qDifPanel = new Panel(currPosition, defaultSize, qDifficulty.color);
+                game.gameObjects.mapGridPanel.addChild(qDifPanel);
             }
         }
     }
@@ -234,14 +250,13 @@ export function drawMapFilterPanel(game) {
             {x: filterButtonSize, y: filterButtonSize}
         );
         filterButton.iValue = i;
-        filterButton.triggerClick = function() {
+        filterButton.addClickAction(function() {
             game.ACTIVE_FILTER_INDEX = this.iValue;
             game.mustUpdateView = true;
             console.log("OK");
             console.log(game.inputHandler);
-        };
+        }, game.inputHandler);
         game.gameObjects.mapFilterPanel.addChild(filterButton);
-        game.inputHandler.clickableObjects.push(filterButton);
 
     }
 }

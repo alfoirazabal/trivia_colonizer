@@ -12,9 +12,9 @@ export const GRID_TILE_SIZE = 80;   //80px x 80px
 export const GRID_POSITION_COLORS = ["#444", "#333"];
 
 export const QUESTION_DIFFICULTIES = {
-    0: {name: "easy", color: "#0f0"},
-    1: {name: "medium", color: "#ff0"},
-    2: {name: "hard", color: "#f00"}
+    0: {name: "easy", color: "rgba(0, 255, 0, 0.1)"},
+    1: {name: "medium", color: "rgba(255, 255, 0, 0.1)"},
+    2: {name: "hard", color: "rgba(255, 0, 0, 0.1)"}
 };
 
 export const TOTAL_N_OF_POWER_UPS = 10; // On the Grid

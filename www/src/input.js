@@ -1,3 +1,5 @@
+import GameObject from "../src/assets/display/predef/gameObject.js";
+
 export default class InputHandler {
 
     constructor(game) {
@@ -42,19 +44,24 @@ export default class InputHandler {
     }
 
     runHoverOnGameObject(event) {
-        for(var hoverableObject of this.hoverableObjects) {
-            if(hoverableObject.size !== undefined) {
+        var ran = false;
+        for(var i = 0 ; !ran && i < this.hoverableObjects.length ; i++) {
+            if(this.hoverableObjects[i].size !== undefined) {
                 const x = event.clientX;
                 const y = event.clientY;
-                const limitXObj = hoverableObject.position.x + hoverableObject.size.x;
-                const limitYObj = hoverableObject.position.y + hoverableObject.size.y;
-                if(hoverableObject.position.x <= x && hoverableObject.position.y <= y) {
+                const limitXObj = this.hoverableObjects[i].position.x + this.hoverableObjects[i].size.x;
+                const limitYObj = this.hoverableObjects[i].position.y + this.hoverableObjects[i].size.y;
+                if(this.hoverableObjects[i].position.x <= x && this.hoverableObjects[i].position.y <= y) {
                     if(limitXObj >= x && limitYObj >= y) {
-                        hoverableObject.triggerHover();
-                        hoverableObject.triggerHoverLabelInfo();
+                        this.hoverableObjects[i].triggerHover();
+                        this.hoverableObjects[i].triggerHoverLabelInfo();
+                        ran = true;
                     }
                 }
             }
+        }
+        if(!ran) {
+            GameObject.GAME_DEFAULT_INFO_LABEL.text = "";
         }
     }
 
