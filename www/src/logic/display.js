@@ -65,17 +65,18 @@ export function drawUppermostPanel(game) {
         drawPanelQuestion(game, question);
         console.log(game.gameObjects);
     }, game.inputHandler);
-    buttonText.buildLabelInfoText("GOTOMENU!", game.inputHandler);
+    buttonText.buildLabelInfoText("Go to Menu!", game.inputHandler);
     game.gameObjects.uppermostPanel.addChild(buttonText);
     
 }
 
 export function drawUpperPanel(game) {
 
-    createPlayerUpperPanel(game, 1);
-    createPlayerUpperPanel(game, 2);
+    createPlayerUpperPanel(game.players[0]);
+    createPlayerUpperPanel(game.players[1]);
 
-    function createPlayerUpperPanel(game, playerNumber) {
+    function createPlayerUpperPanel(player) {
+        var playerNumber = player.playerNumber;
         var upperPanelName = PLAYERS_UPPER_PANEL_OBJECT_NAMES + playerNumber;
         removeBeforeRedraw(game, game.gameObjects[upperPanelName]);
         switch(playerNumber) {
@@ -98,6 +99,22 @@ export function drawUpperPanel(game) {
         game.gameObjects[upperPanelName].addChild(labelPowerUps);
         var powerUpsPanel = new Panel({x: 210, y: 38}, {x: 300, y: 30}, "#000");
         game.gameObjects[upperPanelName].addChild(powerUpsPanel);
+        var powerUpsArray = getPowerUpsArray(game);
+        var currentPowerUpInPlayersPanel = 0;
+        for (var powerUp of powerUpsArray) {
+            drawPowerUpInPlayerPanel(powerUp.value, currentPowerUpInPlayersPanel);
+            currentPowerUpInPlayersPanel++;
+        }
+        function drawPowerUpInPlayerPanel(powerUpValue, powerUpPanelIndexPosition) {            
+            var powerUpImage;
+            if (player.powerUps[powerUpPanelIndexPosition]) {
+                powerUpImage = GRID_POWER_UPS[powerUpValue].image_available;
+            } else {
+                powerUpImage = GRID_POWER_UPS[powerUpValue].image;
+            }
+            var powerUpImage = new UIImage({x: powerUpPanelIndexPosition * 30, y: 0}, powerUpImage, {x: 30, y: 30});
+            powerUpsPanel.addChild(powerUpImage);
+        }
     }
 
 }
@@ -141,24 +158,6 @@ export function createMapGridPanel(game) {
                         panelInPosition
                 );
             }
-        }
-        var powerUpsArray = getPowerUpsArray(game);
-        var currentPowerUpInPlayersPanel = 0;
-        for (var powerUp of powerUpsArray) {
-            drawPowerUpInPlayerPanel(game.players[0], powerUp.value, currentPowerUpInPlayersPanel);
-            drawPowerUpInPlayerPanel(game.players[1], powerUp.value, currentPowerUpInPlayersPanel);
-            currentPowerUpInPlayersPanel++;
-        }
-        function drawPowerUpInPlayerPanel(player, powerUpValue, powerUpPanelIndexPosition) {
-            var powerUpImage;
-            if (player.powerUps[powerUpPanelIndexPosition]) {
-                powerUpImage = GRID_POWER_UPS[powerUpValue].image_available;
-            } else {
-                powerUpImage = GRID_POWER_UPS[powerUpValue].image;
-            }
-            var panel = game.gameObjects[PLAYERS_UPPER_PANEL_OBJECT_NAMES + player.playerNumber].gameObjectsChildren[3];
-            var powerUpImage = new UIImage({x: powerUpPanelIndexPosition * 30, y: 0}, powerUpImage, {x: 30, y: 30});
-            panel.addChild(powerUpImage);
         }
     }
     function drawDominatingPlayersGrid() {
