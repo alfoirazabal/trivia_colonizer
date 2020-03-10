@@ -115,7 +115,7 @@ export default class MapGrid {
                 if(powerUpInPos !== undefined) {
                     var powerUpKeys = Object.keys(GRID_POWER_UPS);
                     var randKeyIndex = Math.floor(Math.random() * powerUpKeys.length);
-                    currRow[col] = randKeyIndex;
+                    currRow[col] = GRID_POWER_UPS[randKeyIndex];
                 } else {
                     currRow[col] = null;
                 }

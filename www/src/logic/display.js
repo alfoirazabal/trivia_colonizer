@@ -4,7 +4,6 @@ import { Button } from "../assets/display/predef/button.js";
 import { getRandomQuestion, getPowerUpsArray } from "./works.js";
 import UIImage from "../assets/display/predef/uiimage.js";
 import { GRID_DIMENSIONS, GRID_TILE_SIZE, GRID_POSITION_COLORS, QUESTION_DIFFICULTIES } from "../assets/domain/mapGrid/mapGrid.js";
-import { GRID_POWER_UPS } from "../assets/domain/mapGrid/gridPowerUps.js";
 import { GRID_FILTER_OPTIONS, GRID_FILTER_BUTTONS_POSITIONING } from "../assets/domain/mapGrid/gridsFilter.js";
 import GameObject from "../assets/display/predef/gameObject.js";
 import { QUESTION_TYPES } from "../assets/domain/mapGrid/questionTypes.js";
@@ -105,12 +104,12 @@ export function drawUpperPanel(game) {
             drawPowerUpInPlayerPanel(powerUp.value, currentPowerUpInPlayersPanel);
             currentPowerUpInPlayersPanel++;
         }
-        function drawPowerUpInPlayerPanel(powerUpValue, powerUpPanelIndexPosition) {            
+        function drawPowerUpInPlayerPanel(powerUp, powerUpPanelIndexPosition) {            
             var powerUpImage;
             if (player.powerUps[powerUpPanelIndexPosition]) {
-                powerUpImage = GRID_POWER_UPS[powerUpValue].image_available;
+                powerUpImage = powerUp.image_available;
             } else {
-                powerUpImage = GRID_POWER_UPS[powerUpValue].image;
+                powerUpImage = powerUp.image;
             }
             var powerUpImage = new UIImage({x: powerUpPanelIndexPosition * 30, y: 0}, powerUpImage, {x: 30, y: 30});
             powerUpsPanel.addChild(powerUpImage);
@@ -170,9 +169,8 @@ export function createMapGridPanel(game) {
             for (var powerUp of powerUpsArray) {
                 drawPowerUpInGrid(powerUp.row, powerUp.col, powerUp.value);
             }
-            function drawPowerUpInGrid(row, col, powerUpValue) {
-                var gridPowerUp = GRID_POWER_UPS[powerUpValue];
-                var powerUpImage = new UIImage({x: col * GRID_TILE_SIZE, y: row * GRID_TILE_SIZE}, gridPowerUp.image, {x: 80, y: 80});
+            function drawPowerUpInGrid(row, col, powerUp) {
+                var powerUpImage = new UIImage({x: col * GRID_TILE_SIZE, y: row * GRID_TILE_SIZE}, powerUp.image, {x: 80, y: 80});
                 game.gameObjects.mapGridPanel.addChild(powerUpImage);
             }
         }
@@ -180,14 +178,31 @@ export function createMapGridPanel(game) {
         function drawColorsForDominatingPlayers() {
             // Draw colors for each dominating player...
             var domPlayersGrid = game.mapGrid.grid.dominatingPlayer;
+            var powerUpsGrid = game.mapGrid.grid.powerUpsGrid;
             for (var row = 0 ; row < GRID_DIMENSIONS.X ; row++) {
                 for (var col = 0 ; col < GRID_DIMENSIONS.Y ; col++) {
                     var currGridPlayer = domPlayersGrid[row][col];
-                    if(currGridPlayer !== null) {
-                        var colorBuilder = "rgba(" + currGridPlayer.color.r + ", " + currGridPlayer.color.g + ", " + currGridPlayer.color.b + ", 0.5)";
-                        var panelPlayer = new Panel({x: col * GRID_TILE_SIZE, y: row * GRID_TILE_SIZE}, {x: GRID_TILE_SIZE, y: GRID_TILE_SIZE}, colorBuilder);
-                        game.gameObjects.mapGridPanel.addChild(panelPlayer);
+                    var panelPlayer;
+                    var colorBuilder = "rgba(0, 0, 0, 0)";
+                    if (currGridPlayer !== null) {
+                        colorBuilder = "rgba(" + currGridPlayer.color.r + ", " + currGridPlayer.color.g + ", " + currGridPlayer.color.b + ", 0.5)";
                     }
+                    panelPlayer = new Panel({x: col * GRID_TILE_SIZE, y: row * GRID_TILE_SIZE}, {x: GRID_TILE_SIZE, y: GRID_TILE_SIZE}, colorBuilder);
+                    var txtConqueredBy;
+                    var txtPowerUp;
+                    if (currGridPlayer !== null) {
+                        txtConqueredBy = "Conquered by Player " + currGridPlayer.playerNumber;
+                    } else {
+                        txtConqueredBy = "Unconquered";
+                    }
+                    if (powerUpsGrid[row][col] !== null) {
+                        txtPowerUp = powerUpsGrid[row][col].name;
+                    } else {
+                        txtPowerUp = "No Powerup";
+                    }
+                    var playerGridText = txtConqueredBy + " - " + txtPowerUp;
+                    panelPlayer.buildLabelInfoText(playerGridText, game.inputHandler);                  
+                    game.gameObjects.mapGridPanel.addChild(panelPlayer);
                 }
             }
         }
@@ -252,8 +267,6 @@ export function drawMapFilterPanel(game) {
         filterButton.addClickAction(function() {
             game.ACTIVE_FILTER_INDEX = this.iValue;
             game.mustUpdateView = true;
-            console.log("OK");
-            console.log(game.inputHandler);
         }, game.inputHandler);
         game.gameObjects.mapFilterPanel.addChild(filterButton);
 

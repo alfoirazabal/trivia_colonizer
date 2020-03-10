@@ -68,8 +68,6 @@ export default class InputHandler {
     remove(object) {
         this.clickableObjects = this.clickableObjects.filter(e => e !== object);
         this.hoverableObjects = this.hoverableObjects.filter(e => e !== object);
-        console.log(this.clickableObjects.map(e => e.position));
-        console.log(this.hoverableObjects.map(e => e.position));
     }
 
 }
