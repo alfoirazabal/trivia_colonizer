@@ -25,7 +25,9 @@ export default class Panel extends GameObject {
 
     draw(ctx) {
         ctx.fillStyle = this.color;
-        ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y);
+        ctx.fillRect(
+            this.position.x, this.position.y, this.size.x, this.size.y
+        );
         for(let gameObjectChild of this.gameObjectsChildren) {
             gameObjectChild.draw(ctx);
         }

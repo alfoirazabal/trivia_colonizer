@@ -21,7 +21,9 @@ export class Label extends GameObject {
     draw(ctx) {
         ctx.fillStyle = this.color;
         ctx.font = this.font;
-        ctx.fillText(this.text, this.position.x, this.position.y);
+        ctx.fillText(
+            this.text, this.position.x, this.position.y
+        );
     }
 
     setFont(newFont) {

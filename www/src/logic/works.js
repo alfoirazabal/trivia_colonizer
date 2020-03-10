@@ -45,8 +45,10 @@ export function getPowerUpsArray(game) {
 }
 
 function getQuestionFromFiltered(triviaQuestions) {
-    var randQuest = triviaQuestions[Math.floor(Math.random() * triviaQuestions.length)];
-    var randQuestionText = randQuest.question.split("&quot;").join("\"").split("&#039;").join("'");
+    var randQuest = triviaQuestions[
+        Math.floor(Math.random() * triviaQuestions.length)];
+    var randQuestionText = randQuest.question.split("&quot;").
+            join("\"").split("&#039;").join("'");
     var answerValues = [];
     var correctAnswerIndex;
     if (randQuest.incorrect_answers.length === 1) {  // True or False
@@ -66,8 +68,12 @@ function getQuestionFromFiltered(triviaQuestions) {
             var randInd = [0, 1, 2];
             for(var i = 0 ; i < randInd.length ; i++) {
                 for(var j = i ; j < randInd.length ; j++) {
-                    var randIndex1 = Math.floor(Math.random() * randInd.length);
-                    var randIndex2 = Math.floor(Math.random() * randInd.length);
+                    var randIndex1 = Math.floor(
+                        Math.random() * randInd.length
+                    );
+                    var randIndex2 = Math.floor(
+                        Math.random() * randInd.length
+                    );
                     var rand1 = randInd[randIndex1];
                     var rand2 = randInd[randIndex2];
                     randInd[randIndex1] = rand2;
@@ -81,7 +87,9 @@ function getQuestionFromFiltered(triviaQuestions) {
                 correctAnswerIndex = i;
                 answerValues.push(randQuest.correct_answer);
             } else {
-                answerValues.push(randQuest.incorrect_answers[currentIncorrectAnswerIndexes[currentIncorrectAnswerIndex]]);
+                answerValues.push(randQuest.incorrect_answers[
+                    currentIncorrectAnswerIndexes[currentIncorrectAnswerIndex]
+                ]);
                 currentIncorrectAnswerIndex++;
             }
         }

@@ -27,7 +27,9 @@ export default class MapGrid {
         var questionTypes = this.createQuestionTypesGrid();
         var questionDifficulties = this.createQuestionDifficultiesGrid();
         var powerUpsGrid = this.createPowerUpsGrid();
-        var questions = this.assignQuestions(questionTypes, questionDifficulties);
+        var questions = this.assignQuestions(
+            questionTypes, questionDifficulties
+        );
         this.grid = {
             dominatingPlayer,
             questionTypes,
@@ -114,7 +116,8 @@ export default class MapGrid {
                 });
                 if(powerUpInPos !== undefined) {
                     var powerUpKeys = Object.keys(GRID_POWER_UPS);
-                    var randKeyIndex = Math.floor(Math.random() * powerUpKeys.length);
+                    var randKeyIndex = 
+                            Math.floor(Math.random() * powerUpKeys.length);
                     currRow[col] = GRID_POWER_UPS[randKeyIndex];
                 } else {
                     currRow[col] = null;
@@ -132,7 +135,8 @@ export default class MapGrid {
             for(var col = 0 ; col < GRID_DIMENSIONS.Y ; col++) {
                 var qCategory = qTypes[row][col];
                 var qDifficulty = qDifficulties[row][col];
-                var question = getRandomQuestionFiltered(qDifficulty, qCategory);
+                var question = 
+                        getRandomQuestionFiltered(qDifficulty, qCategory);
                 currCol.push(question);
             }
             grid.push(currCol);

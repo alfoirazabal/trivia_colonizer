@@ -14,7 +14,8 @@ export default class GameObject {
         this.triggerHover = function(){};
         this.triggerHoverLabelInfo = function() {   
             if (thisObj.labelInfoText !== undefined) {
-                GameObject.GAME_DEFAULT_INFO_LABEL.text = thisObj.labelInfoText;
+                GameObject.GAME_DEFAULT_INFO_LABEL.text = 
+                        thisObj.labelInfoText;
             } else {                
                 GameObject.GAME_DEFAULT_INFO_LABEL.text = "";
             }
